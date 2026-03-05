@@ -1,20 +1,33 @@
 import { query } from '../config/db';
+import { Movie } from '../services/movieService';
 
-// 1. Guarda la película en caché (o la recupera si ya existe)
-export const upsertMovieCache = async (movie: any) => {
+export const upsertMovieCache = async (movie: Movie) => {
   const sql = `
-    INSERT INTO movies (external_id, title, description, release_year, cover_image)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO movies (external_id, title, description, year, genre, stars)
+    VALUES ($1, $2, $3, $4, $5, $6)
     ON CONFLICT (external_id) DO UPDATE 
-    SET title = EXCLUDED.title 
+    SET title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        year = EXCLUDED.year,
+        genre = EXCLUDED.genre,
+        stars = EXCLUDED.stars
     RETURNING id;
   `;
-  const values = [movie.external_id, movie.title, movie.description, movie.release_year, movie.cover_image];
+  
+  
+  const values = [
+    movie.id,          
+    movie.title, 
+    movie.description, 
+    movie.year, 
+    movie.genre, 
+    movie.stars
+  ];
+  
   const result = await query(sql, values);
   return result.rows[0].id;
 };
 
-// 2. Gestiona el favorito (Crear o reactivar/desactivar)
 export const toggleFavorite = async (userId: number, movieId: number, isActive: boolean) => {
   const sql = `
     INSERT INTO favorites (user_id, movie_id, is_active)
@@ -27,7 +40,6 @@ export const toggleFavorite = async (userId: number, movieId: number, isActive: 
   return result.rows[0];
 };
 
-// 3. Obtener los favoritos activos de un usuario
 export const getUserFavorites = async (userId: number) => {
   const sql = `
     SELECT m.*, f.updated_at 
