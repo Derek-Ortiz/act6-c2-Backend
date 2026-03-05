@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: soa_node_backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DB_HOST=soa_postgres_db # Se conecta usando el nombre del contenedor de la BD
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASS=secretpassword
+      - DB_NAME=movies_db
+      - EXTERNAL_API_URL=https://devsapihub.com/api-movies
+    networks:
+      - soa_shared_network
+
+networks:
+  soa_shared_network:
+    external: true
