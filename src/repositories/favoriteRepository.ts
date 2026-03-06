@@ -42,7 +42,7 @@ export const toggleFavorite = async (userId: number, movieId: number, isActive: 
 
 export const getUserFavorites = async (userId: number) => {
   const sql = `
-    SELECT m.*, f.updated_at 
+    SELECT m.external_id as id, m.title, m.description, m.year, m.genre, m.stars, f.updated_at 
     FROM favorites f
     JOIN movies m ON f.movie_id = m.id
     WHERE f.user_id = $1 AND f.is_active = TRUE
