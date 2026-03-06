@@ -1,6 +1,6 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool, QueryResult, PoolConfig } from 'pg';
 
-const pool = new Pool({
+const poolConfig: PoolConfig & { family?: number } = {
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT) || 5432,
   user: process.env.DB_USER,
@@ -10,7 +10,9 @@ const pool = new Pool({
     rejectUnauthorized: false
   },
   family: 4
-});
+};
+
+const pool = new Pool(poolConfig);
 
 export const query = (text: string, params?: any[]): Promise<QueryResult> => {
   return pool.query(text, params);
