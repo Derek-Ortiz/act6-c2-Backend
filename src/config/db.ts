@@ -1,6 +1,7 @@
 import { Pool, QueryResult, PoolConfig } from 'pg';
+import * as dns from 'dns';
 
-const poolConfig: PoolConfig & { family?: number } = {
+const poolConfig: PoolConfig & { lookup?: Function } = {
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT) || 5432,
   user: process.env.DB_USER,
@@ -9,7 +10,9 @@ const poolConfig: PoolConfig & { family?: number } = {
   ssl: {
     rejectUnauthorized: false
   },
-  family: 4
+  lookup: (hostname: string, options: any, callback: any) => {
+    dns.lookup(hostname, { family: 4 }, callback);
+  }
 };
 
 const pool = new Pool(poolConfig);
