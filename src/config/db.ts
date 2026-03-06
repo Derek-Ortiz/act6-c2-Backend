@@ -1,9 +1,9 @@
 import { Pool, QueryResult } from 'pg';
 
-// Configuración para IPv6 (sin restricciones de familia)
+// Configuración para Session Pooler (IPv4 compatible)
 const pool = new Pool({
   host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT) || 5432,
+  port: Number(process.env.DB_PORT) || 6543,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
@@ -12,14 +12,13 @@ const pool = new Pool({
   },
   connectionTimeoutMillis: 15000,
   idleTimeoutMillis: 30000,
-  max: 20,
-  min: 2
+  max: 10
 });
 
 // Probar conexión al iniciar
 pool.connect()
   .then(client => {
-    console.log('✅ Conectado a Supabase via IPv6');
+    console.log('✅ Conectado a Supabase Session Pooler (IPv4)');
     return client.query('SELECT NOW()');
   })
   .then(result => {
