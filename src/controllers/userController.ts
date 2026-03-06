@@ -26,4 +26,31 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     console.error(error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
+  
+};
+// Agrega esto al final de userController.ts
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+    const user = await userRepository.getUserByEmail(email);
+
+    if (!user) {
+      res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
+      return;
+    }
+
+    // Retornamos los datos del usuario (sin la contraseña)
+    res.status(200).json({
+      success: true,
+      data: { id: user.id, name: user.name, email: user.email }
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: 'Error interno' });
+  }
 };
