@@ -8,7 +8,8 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  family: 4
 });
 
 export const query = (text: string, params?: any[]): Promise<QueryResult> => {
